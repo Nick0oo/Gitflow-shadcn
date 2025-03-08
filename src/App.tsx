@@ -111,6 +111,17 @@ function App() {
               <CardTitle className="text-2xl font-bold">Team Members</CardTitle>
             </CardHeader>
             <CardContent>
+              {/* 3. Barra de búsqueda antes de la tabla */}
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Search by name, email, or role"
+                  className="border rounded p-2 w-full"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -121,7 +132,7 @@ function App() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {teamData.map((item) => (
+                  {filteredTeamData.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.name}</TableCell>
                       <TableCell>{item.email}</TableCell>
@@ -211,7 +222,9 @@ function App() {
                       <TableCell>
                         <Badge
                           variant={
-                            item.status === 'In Stock' ? 'default' : 'secondary'
+                            item.status === 'In Stock'
+                              ? 'default'
+                              : 'secondary'
                           }
                         >
                           {item.status}
