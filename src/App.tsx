@@ -110,6 +110,25 @@ function App() {
       item.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Estado para la barra de búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Nuevo estado para el miembro seleccionado (modal)
+  const [selectedMember, setSelectedMember] = useState<
+    (typeof teamData)[0] | null
+  >(null);
+
+  // Filtrado para la sección de Team Members
+  const filteredTeamData = teamData.filter((member) => {
+    const lowerSearch = searchTerm.toLowerCase();
+    return (
+      member.name.toLowerCase().includes(lowerSearch) ||
+      member.email.toLowerCase().includes(lowerSearch) ||
+      member.role.toLowerCase().includes(lowerSearch)
+    );
+  });
+
+
   const renderContent = () => {
     switch (activeSection) {
       case 'team':
@@ -119,7 +138,7 @@ function App() {
               <CardTitle className="text-2xl font-bold">Team Members</CardTitle>
             </CardHeader>
             <CardContent>
-              {/* 3. Barra de búsqueda antes de la tabla */}
+              {/* Barra de búsqueda */}
               <div className="mb-4">
                 <input
                   type="text"
@@ -129,7 +148,6 @@ function App() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -140,9 +158,22 @@ function App() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+
                   {filteredTeamData.map((item: typeof teamData[0]) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.name}</TableCell>
+
+                  {filteredTeamData.map((item) => (
+                    // Se agrega onClick para abrir el modal con detalles
+                    <TableRow
+                      key={item.id}
+                      className="cursor-pointer hover:bg-gray-100"
+                      onClick={() => setSelectedMember(item)}
+                    >
+                      <TableCell className="font-medium">
+                        {item.name}
+                      </TableCell>
+
                       <TableCell>{item.email}</TableCell>
                       <TableCell>{item.role}</TableCell>
                       <TableCell>
@@ -406,6 +437,30 @@ function App() {
 
       {/* Main Content */}
       <div className="flex-1 p-8">{renderContent()}</div>
+
+      {/* Modal para ver detalles del miembro (nueva funcionalidad) */}
+      {selectedMember && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded p-6 w-80">
+            <h2 className="text-xl font-bold mb-4">Detalles del Miembro</h2>
+            <p>
+              <strong>Nombre:</strong> {selectedMember.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedMember.email}
+            </p>
+            <p>
+              <strong>Rol:</strong> {selectedMember.role}
+            </p>
+            <p>
+              <strong>Status:</strong> {selectedMember.status}
+            </p>
+            <div className="mt-4 text-right">
+              <Button onClick={() => setSelectedMember(null)}>Cerrar</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
