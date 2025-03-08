@@ -19,8 +19,15 @@ import {
   Settings,
   Package,
 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
-const teamData = [
+const initialTeamData = [
   {
     id: 1,
     name: 'John Doe',
@@ -97,6 +104,15 @@ type Section = 'team' | 'projects' | 'inventory' | 'calendar' | 'settings';
 function App() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [activeSection, setActiveSection] = useState<Section>('team');
+  const [teamMembers, setTeamMembers] = useState(initialTeamData);
+
+  const handleStatusChange = (id: number, newStatus: string) => {
+    setTeamMembers((prevTeamMembers) =>
+      prevTeamMembers.map((member) =>
+        member.id === id ? { ...member, status: newStatus } : member
+      )
+    );
+  };
 
   const [showModal, setShowModal] = useState(false);
   const [notes, setNotes] = useState<{ date: Date; text: string }[]>([]);
@@ -159,7 +175,11 @@ function App() {
                 </TableHeader>
                 <TableBody>
 
+                  {teamMembers.map((item) => (
+
+
                   {filteredTeamData.map((item: typeof teamData[0]) => (
+
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.name}</TableCell>
 
@@ -177,13 +197,24 @@ function App() {
                       <TableCell>{item.email}</TableCell>
                       <TableCell>{item.role}</TableCell>
                       <TableCell>
-                        <Badge
-                          variant={
-                            item.status === 'Active' ? 'default' : 'secondary'
+                        <Select
+                          value={item.status}
+                          onValueChange={(value) =>
+                            handleStatusChange(item.id, value)
                           }
                         >
-                          {item.status}
-                        </Badge>
+                          <SelectTrigger className="w-[120px]">
+                            <SelectValue placeholder="Status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Active">
+                              <Badge variant="default">Active</Badge>
+                            </SelectItem>
+                            <SelectItem value="Inactive">
+                              <Badge variant="secondary">Inactive</Badge>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </TableCell>
                     </TableRow>
                   ))}
