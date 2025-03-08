@@ -98,6 +98,20 @@ function App() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [activeSection, setActiveSection] = useState<Section>('team');
 
+  // 1. Agrega un estado para el texto de búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // 2. Filtra el arreglo original en base al searchTerm
+  //    Conviertes a minúsculas para hacer coincidencias sin distinguir mayúsculas.
+  const filteredTeamData = teamData.filter((member) => {
+    const lowerSearch = searchTerm.toLowerCase();
+    return (
+      member.name.toLowerCase().includes(lowerSearch) ||
+      member.email.toLowerCase().includes(lowerSearch) ||
+      member.role.toLowerCase().includes(lowerSearch)
+    );
+  });
+
   const renderContent = () => {
     switch (activeSection) {
       case 'team':
@@ -107,6 +121,17 @@ function App() {
               <CardTitle className="text-2xl font-bold">Team Members</CardTitle>
             </CardHeader>
             <CardContent>
+              {/* 3. Barra de búsqueda antes de la tabla */}
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Search by name, email, or role"
+                  className="border rounded p-2 w-full"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -117,7 +142,7 @@ function App() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {teamData.map((item) => (
+                  {filteredTeamData.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.name}</TableCell>
                       <TableCell>{item.email}</TableCell>
@@ -207,7 +232,9 @@ function App() {
                       <TableCell>
                         <Badge
                           variant={
-                            item.status === 'In Stock' ? 'default' : 'secondary'
+                            item.status === 'In Stock'
+                              ? 'default'
+                              : 'secondary'
                           }
                         >
                           {item.status}
