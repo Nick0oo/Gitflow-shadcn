@@ -98,6 +98,10 @@ function App() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [activeSection, setActiveSection] = useState<Section>('team');
 
+  const [showModal, setShowModal] = useState(false);
+  const [notes, setNotes] = useState<{ date: Date; text: string }[]>([]);
+  const [noteText, setNoteText] = useState('');
+
   const renderContent = () => {
     switch (activeSection) {
       case 'team':
@@ -224,17 +228,65 @@ function App() {
       case 'calendar':
         return (
           <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold">Calendar</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md border"
-              />
-            </CardContent>
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Calendar</CardTitle>
+        </CardHeader>
+        <CardContent className="flex justify-center">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            className="rounded-md border"
+          />
+        </CardContent>
+        <CardContent className="flex justify-center">
+          <Button onClick={() => setShowModal(true)}>
+            Add Note
+          </Button>
+        </CardContent>
+        <CardContent>
+          <div className="space-y-4">
+            {notes.map((note, index) => (
+          <Card key={index} className="p-4">
+            <CardTitle className="text-lg font-medium">
+              {note.date.toLocaleDateString()}
+            </CardTitle>
+            <p>{note.text}</p>
+          </Card>
+            ))}
+          </div>
+        </CardContent>
+        {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded-md">
+          <h2 className="text-xl font-bold mb-4">Add Note</h2>
+          <textarea
+            className="w-full p-2 border rounded-md"
+            rows={4}
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+          />
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="ghost" onClick={() => setShowModal(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+            if (date && noteText) {
+              setNotes([...notes, { date, text: noteText }]);
+              setNoteText('');
+              setShowModal(false);
+            } else {
+              alert('Please select a date and enter a note.');
+            }
+              }}
+            >
+              Save
+            </Button>
+          </div>
+            </div>
+          </div>
+        )}
           </Card>
         );
 
