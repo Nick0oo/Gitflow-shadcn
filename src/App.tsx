@@ -102,6 +102,14 @@ function App() {
   const [notes, setNotes] = useState<{ date: Date; text: string }[]>([]);
   const [noteText, setNoteText] = useState('');
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const filteredTeamData = teamData.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.role.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const renderContent = () => {
     switch (activeSection) {
       case 'team':
@@ -132,7 +140,7 @@ function App() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredTeamData.map((item) => (
+                  {filteredTeamData.map((item: typeof teamData[0]) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.name}</TableCell>
                       <TableCell>{item.email}</TableCell>
@@ -253,9 +261,7 @@ function App() {
           />
         </CardContent>
         <CardContent className="flex justify-center">
-          <Button onClick={() => setShowModal(true)}>
-            Add Note
-          </Button>
+          <Button onClick={() => setShowModal(true)}>Add Note</Button>
         </CardContent>
         <CardContent>
           <div className="space-y-4">
@@ -265,6 +271,15 @@ function App() {
               {note.date.toLocaleDateString()}
             </CardTitle>
             <p>{note.text}</p>
+            <Button
+              variant="ghost"
+              onClick={() => {
+            const newNotes = notes.filter((_, i) => i !== index);
+            setNotes(newNotes);
+              }}
+            >
+              Delete
+            </Button>
           </Card>
             ))}
           </div>
